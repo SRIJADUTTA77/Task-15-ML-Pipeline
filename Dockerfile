@@ -5,9 +5,10 @@ WORKDIR /app
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-COPY src/ ./src
+COPY src/ ./src/
+
+WORKDIR /app/src
 
 ENV PORT=8080
-EXPOSE 8080
 
-CMD ["python", "src/app.py"]
+CMD ["python", "app.py"]
