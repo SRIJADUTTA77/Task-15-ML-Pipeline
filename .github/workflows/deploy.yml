@@ -2,8 +2,7 @@ name: Deploy to Cloud Run
 
 on:
   push:
-    branches:
-      - main
+    branches: [ "main" ]
 
 env:
   PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
@@ -25,6 +24,8 @@ jobs:
 
     - name: Setup Cloud SDK
       uses: google-github-actions/setup-gcloud@v2
+      with:
+        project_id: ${{ secrets.GCP_PROJECT_ID }}
 
     - name: Configure Docker
       run: gcloud auth configure-docker --quiet
