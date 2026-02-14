@@ -5,10 +5,8 @@ WORKDIR /app
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-COPY src/ ./src/
+COPY src/ src/
 
-WORKDIR /app/src
+ENV PYTHONUNBUFFERED=1
 
-ENV PORT=8080
-
-CMD ["python", "app.py"]
+CMD ["python", "src/app.py"]

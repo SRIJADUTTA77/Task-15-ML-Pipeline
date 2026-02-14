@@ -1,9 +1,8 @@
-import joblib
 import tempfile
+import joblib
 from google.cloud import storage
 
-
-def load_model_from_gcs(bucket_name, blob_name):
+def load_model_from_gcs(bucket_name: str, blob_name: str):
     client = storage.Client()
     bucket = client.bucket(bucket_name)
     blob = bucket.blob(blob_name)
