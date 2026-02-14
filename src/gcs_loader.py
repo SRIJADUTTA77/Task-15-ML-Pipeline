@@ -1,22 +1,27 @@
 import os
+import tempfile
 from google.cloud import storage
 import joblib
 
-def load_model_from_gcs(
-    bucket_name: str,
-    blob_name: str,
-    local_path: str = "/tmp/model.pkl"
-):
-    """
-    Securely download and load a model from GCS.
-    Uses Cloud Run service account automatically.
-    """
+_model = None  # cache
 
-    if not os.path.exists(local_path):
-        client = storage.Client()
-        bucket = client.bucket(bucket_name)
-        blob = bucket.blob(blob_name)
+def load_model():
+    global _model
+    if _model is not None:
+        return _model
 
-        blob.download_to_filename(local_path)
+    bucket_name = os.environ.get("MODEL_BUCKET")
+    blob_name = os.environ.get("MODEL_BLOB")
 
-    return joblib.load(local_path)
+    if not bucket_name or not blob_name:
+        raise RuntimeError("MODEL_BUCKET or MODEL_BLOB not set")
+
+    client = storage.Client()
+    bucket = client.bucket(bucket_name)
+    blob = bucket.blob(blob_name)
+
+    with tempfile.NamedTemporaryFile(delete=False) as tmp:
+        blob.download_to_filename(tmp.name)
+        _model = joblib.load(tmp.name)
+
+    return _model
